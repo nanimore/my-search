@@ -42,11 +42,34 @@ const onTabChange = (key) => {
   });
 };
 
+import myAxios from "@/plugins/myAxios";
+
+// myAxios.get("/post/get/vo?id=" + "1").then((res) => {
+//   console.log(res);
+// });
+
+const postList = ref([]);
+myAxios.post("/post/list/page/vo", {}).then((res) => {
+  postList.value = res.records;
+});
+
+const pictureList = ref([]);
+myAxios.post("/picture/list/page/vo", {}).then((res) => {
+  pictureList.value = res.records;
+});
+
+const userList = ref([]);
+myAxios.post("/user/list/page/vo",{}).then((res) => {
+  userList.value = res.records;
+});
+
+
 </script>
 
 <template>
 <!--  <img alt="Vue logo" src="../assets/logo.png">-->
   <div class="index-page">
+
     <a-input-search
         v-model:value="searchParams.text"
         placeholder="input search text"
@@ -58,7 +81,7 @@ const onTabChange = (key) => {
 
     <a-tabs v-model:activeKey="activeKey" @change="onTabChange" >
       <a-tab-pane key="post" tab="文章">
-         <PostList/>
+        <PostList :post-list="postList" />
       </a-tab-pane>
       <a-tab-pane key="picture" tab="图片" force-render>
         <PictureList/>
