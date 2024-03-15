@@ -28,12 +28,6 @@ watchEffect(() => {
   } ;
 });
 
-const onSearch = (value) => {
-  alert(value);
-  router.push({
-      query: searchParams.value,
-  });
-};
 
 const onTabChange = (key) => {
   router.push({
@@ -49,20 +43,33 @@ import myAxios from "@/plugins/myAxios";
 // });
 
 const postList = ref([]);
-myAxios.post("/post/list/page/vo", {}).then((res) => {
-  postList.value = res.records;
-});
-
 const pictureList = ref([]);
-myAxios.post("/picture/list/page/vo", {}).then((res) => {
-  pictureList.value = res.records;
-});
-
 const userList = ref([]);
-myAxios.post("/user/list/page/vo",{}).then((res) => {
-  userList.value = res.records;
-});
+const loadData = (params) => {
+  const query = {
+    ...params,
+    searchText: params.text,
+  };
 
+  myAxios.post("/search/all", query).then((res) => {
+    postList.value = res.postList;
+    userList.value = res.userList;
+    pictureList.value = res.pictureList;
+  });
+};
+
+// 首次请求
+loadData(initSearchParams);
+
+const onSearch = (value) => {
+  // alert(value);
+  router.push({
+    query: searchParams.value,
+  });
+
+  // 根据条件查询
+  loadData(searchParams.value);
+};
 
 </script>
 
@@ -84,7 +91,7 @@ myAxios.post("/user/list/page/vo",{}).then((res) => {
         <PostList :post-list="postList" />
       </a-tab-pane>
       <a-tab-pane key="picture" tab="图片" force-render>
-        <PictureList/>
+        <PictureList :picture-list="pictureList" />
       </a-tab-pane>
       <a-tab-pane key="user" tab="用户">
         <UserList/>
